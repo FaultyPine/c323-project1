@@ -12,6 +12,8 @@ The following **required** functionality is completed:
 - Top text box that displays current operating number or result number
 * [ ] User can ...
 - perform basic addition, subtraction, multiplcation, division, percentage, sign flip, display clearing, decimal operations
+- rotate screen to see properly formatted calculator in landscape mode
+- extra buttons appear in landscape mode (sin, cos, tan, ln, log10)
 
 
 The following **extensions** are implemented:
@@ -22,14 +24,14 @@ No extensions
 
 Here's a walkthrough of implemented user stories:
 
-<img src='walkthrough.gif' title='Video Walkthrough' width='50%' alt='Video Walkthrough' />
+<img src='walkthrough-proj2.gif' title='Video Walkthrough' width='50%' alt='Video Walkthrough' />
 
 ## Notes
 
 Describe any challenges encountered while building the app.
 
-- little familiarity with kotlin, android studio, mostly everything. Lots of online resources were needed. Felt unprepared
-- taking into account both decimal and integer operations
+- getting the landscape mode to switch to the new xml when rotating the phone didn't work for a while
+ended up deleting and re-creating it and it worked.
 
 ## License
 

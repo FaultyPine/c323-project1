@@ -14,12 +14,13 @@ class Calculator {
     // storage for operands we will apply to numbers
     var opBuffer = ArrayList<String>()
     // text displayed on calculator textview
-    var display = ""
+    var display = "0"
     var shouldClearDisplayInput = true
     // main textview of the calculator
     var mainTextView: TextView? = null
 
-    var buffer = ""
+    var justAddedOp = true
+    var justComputedOp = false
 
     // cache reference to calculator textview for text display
     fun SetMainDisplay(mainTextView: TextView)
@@ -34,7 +35,9 @@ class Calculator {
 
     // clear all buffered operations/numbers and clear display
     fun Clear() {
-        display = ""
+        display = "0"
+        justAddedOp = true
+        justComputedOp = false
         numBuffer.clear()
         opBuffer.clear()
         DisplayUpdate()
@@ -132,7 +135,51 @@ class Calculator {
             return
         }
 
+        var num = op.toIntOrNull()
+        if (num == null)
+        {
+            // add current display number to num buf
+            var tryParseFullDisplayNum = display.toFloatOrNull()
+            if (tryParseFullDisplayNum == null)
+            {
+                // error state, display should only ever display numbers
+                Log.e("[ERROR]", "invalid display result")
+                return
+            }
+            else if (!justComputedOp && !justAddedOp)
+            {
+                // take the number on the display and make it a num, then add to buf
+                numBuffer.add(tryParseFullDisplayNum)
+                println("added " + tryParseFullDisplayNum + " to num buf")
+            }
+            if (op != "=" && op != "." && !justAddedOp)
+            {
+                opBuffer.add(op)
+                justAddedOp = true
+                justComputedOp = false
+                println("added " + op + " to op buf")
+            }
+            if (numBuffer.size > 1 && opBuffer.isNotEmpty())
+            {
+                DoOperation()
+            }
+        }
+        else
+        {
+            if (justAddedOp)
+            {
+                display = ""
+                justAddedOp = false
+                println("Clear display")
+            }
+            display = display.plus(op)
+            justComputedOp = false
+        }
 
+
+
+
+/*
         // see if our op is a number or a symbol
         var tryParseNum = op.toIntOrNull()
         if (tryParseNum == null)
@@ -151,6 +198,8 @@ class Calculator {
                 // take the number on the display and make it a num, then add to buf
                 numBuffer.add(tryParseFullDisplayNum)
             }
+
+
             // add ops to buffer if we aren't computing a result
             if (op != "=")
             {
@@ -168,7 +217,7 @@ class Calculator {
                 {
                     operation = opBuffer.removeLastOrNull()
                 }
-                if (operation != null)
+                if (operation != null && operation.isNotEmpty())
                 {
                     // actually apply the operation and display the result
                     DoOperation(operation);
@@ -177,7 +226,7 @@ class Calculator {
         }
         else
         {
-            if (!opBuffer.isEmpty() && shouldClearDisplayInput)
+            if (!opBuffer.isEmpty() || shouldClearDisplayInput)
             {
                 // only clear previous number once we enter another number
                 display = ""
@@ -186,38 +235,54 @@ class Calculator {
             // number
             display = display.plus(op)
         }
+        */
         DisplayUpdate()
+
+        println("numBuf = $numBuffer  opBuf = $opBuffer")
     }
 
     fun DoOperation(operation: String)
     {
-        var opResult = ApplyOp(numBuffer.get(0), numBuffer.get(1), operation)
-        display = opResult
-        numBuffer.clear()
-        opBuffer.clear()
+        var opResult = ApplyOp(numBuffer[0], numBuffer[1], operation)
+        display = opResult.toString()
+        //numBuffer.clear()
+        //opBuffer.clear()
         shouldClearDisplayInput = true
     }
-    fun ApplyOp(num1: Float, num2: Float, op: String): String {
-        var result = "invalid op"
+    fun DoOperation()
+    {
+        println("Doing operation... numBuf = $numBuffer  opBuf = $opBuffer")
+        var op1 = numBuffer.removeFirst()
+        var op2 = numBuffer.removeFirst()
+        var operation: String = opBuffer.removeFirstOrNull() ?: return
+        var opResult = ApplyOp(op1, op2, operation)
+        numBuffer.add(opResult)
+        println("result = $opResult")
+        println("bufs after operation: numBuf = $numBuffer  opBuf = $opBuffer")
+        display = opResult.toString()
+        //numBuffer.clear()
+        //opBuffer.clear()
+        shouldClearDisplayInput = true
+        justComputedOp = true
+    }
+    fun ApplyOp(num1: Float, num2: Float, op: String) : Float
+    {
+        var result = 0.0f
         if (op == "+")
         {
-            result = (num1+num2).toString()
+            result = (num1+num2)
         }
         else if (op == "-")
         {
-            result = (num1-num2).toString()
+            result = (num1-num2)
         }
-        else if (op == "*")
+        else if (op == "*" || op == "x")
         {
-            result = (num1*num2).toString()
+            result = (num1*num2)
         }
         else if (op == "/")
         {
-            result = (num1/num2).toString()
-        }
-        if (result.endsWith(".0"))
-        {
-            result = result.split(".")[0].toInt().toString()
+            result = (num1/num2)
         }
         return result
     }
