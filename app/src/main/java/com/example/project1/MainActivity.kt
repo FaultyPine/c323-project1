@@ -12,6 +12,11 @@ import androidx.constraintlayout.widget.ConstraintLayout
 
 class MainActivity : AppCompatActivity() {
 
+    /**
+     * sets the click callbacks of all our buttons in the scene.
+     * Passes the button's text to our calculator for computation and updating
+     * @param parent the root viewgroup of our xml
+     */
     fun setCallbacks(parent: ViewGroup) {
         for (i in 0 until parent.childCount) {
             val child = parent.getChildAt(i)
@@ -30,6 +35,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * an activity callback that signals the creation of our GUI. Runs at the start of the app
+     * and when the phone rotates.
+     * @param savedInstanceState a buffer of arbitrary data used for serializing/deserializing data
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
